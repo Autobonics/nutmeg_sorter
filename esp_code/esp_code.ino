@@ -1,16 +1,20 @@
 //Servo
 #include <Servo.h>
 Servo myservo1;  // create servo object to control a servo
-Servo myservo2;  // create servo object to control a servo
 #define servoPin1 13
-#define servoPin2 32
 int pos = 0;    // variable to store the servo position
 
 //Stepper
-const int DIR = 12;
-const int STEP = 14;
+const int DIR1 = 12;
+const int STEP1 = 14;
+bool isStepper1Rotate = false;
+const int DIR2 = 27;
+const int STEP2 = 26;
+bool isStepper2Rotate = false;
+const int DIR3 = 25;
+const int STEP3 = 2;  
+bool isStepper3Rotate = false;
 const int  steps_per_rev = 200;
-bool isStepperRotate = false;
 
 //IR LED
 #define irPin 15
@@ -27,13 +31,13 @@ bool isStepperRotate = false;
 // Provide the RTDB payload printing info and other helper functions.
 #include <addons/RTDBHelper.h>
 /* 1. Define the WiFi credentials */
-#define WIFI_SSID "Autobonics_4G"
-#define WIFI_PASSWORD "autobonics@27"
+#define WIFI_SSID "poco"
+#define WIFI_PASSWORD "pocopoco"
 // For the following credentials, see examples/Authentications/SignInAsUser/EmailPassword/EmailPassword.ino
 /* 2. Define the API Key */
-#define API_KEY "AIzaSyBujIYAU6YiX1kd69HqeY9exU1GeCePLkc"
+#define API_KEY "AIzaSyCZRnQ0MHXxdFRXMqkibTiT4FfUBLpjm50"
 /* 3. Define the RTDB URL */
-#define DATABASE_URL "https://ring-sorting-machine-default-rtdb.asia-southeast1.firebasedatabase.app/" //<databaseName>.firebaseio.com or <databaseName>.<region>.firebasedatabase.app
+#define DATABASE_URL "https://nutmeg-9414e-default-rtdb.asia-southeast1.firebasedatabase.app/ " //<databaseName>.firebaseio.com or <databaseName>.<region>.firebasedatabase.app
 /* 4. Define the user Email and password that alreadey registerd or added in your project */
 #define USER_EMAIL "device@autobonics.com"
 #define USER_PASSWORD "12345678"
@@ -62,38 +66,43 @@ void streamCallback(StreamData data)
 
   // Serial.println();
   FirebaseJson jVal = data.jsonObject();
-  FirebaseJsonData stepperRotate;
-  FirebaseJsonData flapAngle;
-  FirebaseJsonData rotateAngle;
+  FirebaseJsonData stepper1Rotate;
+  FirebaseJsonData stepper2Rotate;
+  FirebaseJsonData stepper3Rotate;
+  FirebaseJsonData servoAngle;
 
-  jVal.get(stepperRotate, "stepper");
-  jVal.get(flapAngle, "flapAngle");
-  jVal.get(rotateAngle, "rotateAngle");
+  jVal.get(stepper1Rotate, "stepper1");
+  jVal.get(stepper2Rotate, "stepper2");
+  jVal.get(stepper3Rotate, "stepper3");
+  jVal.get(servoAngle, "servoAngle");
 
 
-  if (stepperRotate.success)
+  if (stepper1Rotate.success)
   {
-    Serial.println("Success data stepperRotate");
-    bool value = stepperRotate.to<bool>(); 
-    isStepperRotate = value;  
-    // if(value){
-    //   stepprRotate();
-    // } else {
-    //   stepperStop();
-    // }
+    Serial.println("Success data stepper1Rotate");
+    bool value = stepper1Rotate.to<bool>(); 
+    isStepper1Rotate = value;  
   } 
 
-  if (flapAngle.success)
+    if (stepper2Rotate.success)
   {
-    Serial.println("Success data flapAngle");
-    int value = flapAngle.to<int>();   
+    Serial.println("Success data stepper2Rotate");
+    bool value = stepper2Rotate.to<bool>(); 
+    isStepper2Rotate = value;  
+  } 
+
+    if (stepper3Rotate.success)
+  {
+    Serial.println("Success data stepper3Rotate");
+    bool value = stepper3Rotate.to<bool>(); 
+    isStepper3Rotate = value;  
+  } 
+
+  if (servoAngle.success)
+  {
+    Serial.println("Success data servoAngle");
+    int value = servoAngle.to<int>();   
     myservo1.write(value);
-  }  
-  if (rotateAngle.success)
-  {
-    Serial.println("Success data rotateAngle");
-    int value = rotateAngle.to<int>();   
-    myservo2.write(value);
   }  
 
 }
@@ -116,13 +125,15 @@ void setup() {
  
   //Servo
   myservo1.attach(servoPin1);
-  myservo2.attach(servoPin2);
   myservo1.write(100);
-  myservo2.write(180);
 
   //Stepper
-  pinMode(STEP, OUTPUT);
-  pinMode(DIR, OUTPUT);
+  pinMode(STEP1, OUTPUT);
+  pinMode(DIR1, OUTPUT);
+  pinMode(STEP2, OUTPUT);
+  pinMode(DIR2, OUTPUT);
+  pinMode(STEP3, OUTPUT);
+  pinMode(DIR3, OUTPUT);
 
   //IR
   pinMode(irPin, INPUT);
@@ -197,7 +208,9 @@ bool irCurrentReading = false;
 void loop() {
   isIr = digitalRead(irPin);
   updateData();  
-  stepprRotate();
+  steppr1Rotate();
+  steppr2Rotate();
+  steppr3Rotate();  
 }
 
 void updateData(){
@@ -206,7 +219,7 @@ void updateData(){
     irCurrentReading = isIr;
     sendDataPrevMillis = millis();
     FirebaseJson json;
-    json.set("isRing", isIr);
+    json.set("isIr", isIr);
     json.set(F("ts/.sv"), F("timestamp"));
     Serial.printf("Set json... %s\n", Firebase.RTDB.set(&fbdo, path.c_str(), &json) ? "ok" : fbdo.errorReason().c_str());
     Serial.println("");
@@ -214,49 +227,44 @@ void updateData(){
 }
 
 
-void stepprRotate(){
-  digitalWrite(DIR, HIGH);
-  // Serial.println("Spinning Clockwise...");
-  // for(int i = 0; i<steps_per_rev; i++)
-  // {
-  //   digitalWrite(STEP, HIGH);
-  //   delayMicroseconds(3500);
-  //   digitalWrite(STEP, LOW);
-  //   delayMicroseconds(3500);
-  // }
-   if(isStepperRotate)
+void steppr1Rotate(){
+  digitalWrite(DIR1, HIGH);
+  if(isStepper1Rotate)
   {
-    digitalWrite(STEP, HIGH);
-    delayMicroseconds(3500);
-    digitalWrite(STEP, LOW);
-    delayMicroseconds(3500);
+    for(int i = 0; i<200; i++)
+    {
+      digitalWrite(STEP1, HIGH);
+      delayMicroseconds(4000);
+      digitalWrite(STEP1, LOW);
+      delayMicroseconds(4000);
+    }
   }
 }
 
-void stepperStop(){
-  digitalWrite(STEP, LOW);
+void steppr2Rotate(){
+  digitalWrite(DIR2, HIGH);
+  if(isStepper2Rotate)
+  {
+    for(int i = 0; i<200; i++)
+    {
+      digitalWrite(STEP2, HIGH);
+      delayMicroseconds(2000);
+      digitalWrite(STEP2, LOW);
+      delayMicroseconds(2000);
+    }
+  }
 }
 
-void closeFlap(){
-  myservo1.write(40);
-}
-
-void openFlap(){
-  myservo1.write(100);
-}
-
-void straitPosition(){
-  myservo2.write(180);
-}
-
-void rotatedPosition(){
-  myservo2.write(0);
-}
-
-void dropLeftPosition(){
-  myservo2.write(45);
-}
-
-void dropRightPosition(){
-  myservo2.write(135);
+void steppr3Rotate(){
+  digitalWrite(DIR3, HIGH);
+  if(isStepper3Rotate)
+  {
+    for(int i = 0; i<200; i++)
+    {
+      digitalWrite(STEP3, HIGH);
+      delayMicroseconds(2000);
+      digitalWrite(STEP3, LOW);
+      delayMicroseconds(2000);
+    }
+  }
 }

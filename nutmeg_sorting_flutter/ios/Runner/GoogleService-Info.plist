@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>193407198246-to51bnr0vkitvtmvm3vlgm8u9ue5g980.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.193407198246-to51bnr0vkitvtmvm3vlgm8u9ue5g980</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCPA_oBkQCSLcDNxZzMg34QBtOkUWg5FXA</string>
+	<key>GCM_SENDER_ID</key>
+	<string>193407198246</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.autobonics.hydropodHydroponics</string>
+	<key>PROJECT_ID</key>
+	<string>hydropod-12ef6</string>
+	<key>STORAGE_BUCKET</key>
+	<string>hydropod-12ef6.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:193407198246:ios:1868d052e0bf98cffe72e7</string>
+	<key>DATABASE_URL</key>
+	<string>https://hydropod-12ef6-default-rtdb.asia-southeast1.firebasedatabase.app</string>
+</dict>
+</plist>

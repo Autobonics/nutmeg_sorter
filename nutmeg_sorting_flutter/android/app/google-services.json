@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "835265270110",
+    "firebase_url": "https://nutmeg-9414e-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "nutmeg-9414e",
+    "storage_bucket": "nutmeg-9414e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:835265270110:android:aab55735bd4ca9ee5effcf",
+        "android_client_info": {
+          "package_name": "com.autobonics.ring_sorting_flutter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "835265270110-vi6cinkav2qm1a6a4197dq9tqm7v53fp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBFZnsNGD_vr2oUuKKdxxTCT8v1TLf2TZ4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "835265270110-vi6cinkav2qm1a6a4197dq9tqm7v53fp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "835265270110-4a5neh5o5eie13l2vm05uq0a5vjipaco.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.autobonics.hydropodHydroponics"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
