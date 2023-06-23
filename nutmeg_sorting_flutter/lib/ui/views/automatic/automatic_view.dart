@@ -83,6 +83,20 @@ class _HomeBody extends ViewModelWidget<TrainViewModel> {
                               onTap: () {
                                 _showBottomSheet(context);
                               },
+                            )
+                          else
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Card(
+                                  child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  "${model.label ?? "Non"}: ${model.confidence ?? 0.0}",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 22),
+                                ),
+                              )),
                             ),
                         ],
                       ),

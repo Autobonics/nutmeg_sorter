@@ -11,6 +11,7 @@ import '../../../app/app.locator.dart';
 import '../../../app/app.logger.dart';
 // import '../../setup_snackbar_ui.dart';
 import 'dart:math';
+import 'package:tflite/tflite.dart';
 
 class TrainViewModel extends ReactiveViewModel {
   final log = getLogger('AutomaticViewModel');
@@ -79,6 +80,14 @@ class TrainViewModel extends ReactiveViewModel {
       }
     });
     getDeviceData();
+    initModel();
+  }
+
+  void initModel() async {
+    String? res;
+    res = await Tflite.loadModel(
+        model: "assets/model.tflite", labels: "assets/labels.txt");
+    log.i(res);
   }
 
   bool _isSorting = false;
@@ -160,7 +169,7 @@ class TrainViewModel extends ReactiveViewModel {
       log.i(
           "Height: ${controller.value.previewSize?.height} Width: ${controller.value.previewSize?.width}");
       _topImg = await _imageProcessingService.getCroppedImageOfRing(img.path);
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(Duration(seconds: 3));
       //Drop based on the decision
       bool isGoodRing = await decideIsGoodRing();
       if (isGoodRing)
@@ -184,11 +193,35 @@ class TrainViewModel extends ReactiveViewModel {
 
   Future<bool> decideIsGoodRing() async {
     log.i("Deciding ring condition");
-    final s1 = await _topImg!.length();
-    Random random = Random();
-    bool c = random.nextBool();
-    log.i(c);
-    return c;
+    try {
+      final output = await Tflite.runModelOnImage(
+        path: _topImg!.path,
+        imageMean: 0.0, // defaults to 117.0
+        imageStd: 255.0, // defaults to 1.0
+        numResults: 2, // defaults to 5
+        threshold: 0.2, // defaults to 0.1
+      );
+      bool c = processRecognitions(output);
+      return c;
+    } catch (e) {
+      log.e("Error occurred: $e");
+      return false;
+    }
+  }
+
+  String? label;
+  double? confidence;
+
+  bool processRecognitions(outputs) {
+    log.i(outputs);
+    label = outputs[0]['label'].split(" ").last;
+    confidence = outputs[0]['confidence'];
+    notifyListeners();
+    log.i(confidence);
+    if (label == "Good") {
+      if (confidence! > 0.99) return true;
+    }
+    return false;
   }
 
   void setDelayTime(int value) {
@@ -230,6 +263,7 @@ class TrainViewModel extends ReactiveViewModel {
 
   @override
   void dispose() {
+    Tflite.close();
     controller.dispose();
     super.dispose();
   }
